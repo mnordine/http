@@ -66,19 +66,21 @@ class BrowserClient extends BaseClient {
       });
 
       reader.onError.first.then((error) {
+        final httpRequest = error.target as HttpRequest;
         completer.completeError(
-            new ClientException(error.toString(), request.url),
+            new ClientException(error.toString(), request.url, httpRequest),
             StackTrace.current);
       });
 
       reader.readAsArrayBuffer(blob);
     });
 
-    xhr.onError.first.then((_) {
+    xhr.onError.first.then((error) {
+      final httpRequest = error.target as HttpRequest;
       // Unfortunately, the underlying XMLHttpRequest API doesn't expose any
       // specific information about the error itself.
       completer.completeError(
-          new ClientException("XMLHttpRequest error.", request.url),
+          new ClientException("XMLHttpRequest error.", request.url, httpRequest),
           StackTrace.current);
     });
 
